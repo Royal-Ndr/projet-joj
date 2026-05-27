@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import SideNav from '../components/SideNav';
 import BottomNav from '../components/BottomNav';
+import { ScoreProvider } from '../components/ScoreProvider';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
@@ -10,7 +11,13 @@ export const metadata: Metadata = {
     'Gaindé Zone — Engagement jeunesse et découverte culturelle JOJ Dakar 2026',
 };
 
-const navItems = [
+type NavItem = {
+  href: string;
+  label: string;
+  icon: 'Home' | 'MapPin' | 'Cpu';
+};
+
+const navItems: NavItem[] = [
   { href: '/', label: 'Accueil', icon: 'Home' },
   { href: '/carte', label: 'Carte culturelle', icon: 'MapPin' },
   { href: '/sports', label: 'Sport-Matcher', icon: 'Cpu' },
@@ -48,7 +55,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </nav>
             </header>
 
-            {children}
+            <ScoreProvider>{children}</ScoreProvider>
           </main>
 
           <div className="fixed inset-x-0 bottom-0 z-50 bg-white/95 px-4 py-3 shadow-[0_-12px_40px_rgba(0,0,0,0.06)] backdrop-blur-xl md:hidden">

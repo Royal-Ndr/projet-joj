@@ -3,6 +3,7 @@ import ScorePanel from "../components/ScorePanel";
 import ChallengeCard from "../components/ChallengeCard";
 import Confetti from "../components/Confetti";
 import { Sparkles } from "lucide-react";
+import { useScore } from "../components/ScoreProvider";
 import { useState } from "react";
 
 const challenges = [
@@ -12,21 +13,12 @@ const challenges = [
 ];
 
 export default function HomePage() {
+  const { addPoints } = useScore();
   const [celebrate, setCelebrate] = useState(false);
 
   function handleValidate(points: number) {
-    try {
-      const key = "gainde:score";
-      const raw = localStorage.getItem(key);
-      const current = raw ? Number(raw) : 0;
-      const next = current + points;
-      localStorage.setItem(key, String(next));
-      // dispatch custom event so ScorePanel updates
-      window.dispatchEvent(new CustomEvent('gainde:score:changed', { detail: { score: next } }));
-      setCelebrate(true);
-    } catch (e) {
-      console.error(e);
-    }
+    addPoints(points);
+    setCelebrate(true);
   }
 
   return (

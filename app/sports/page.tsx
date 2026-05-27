@@ -34,16 +34,47 @@ const questions = [
 ];
 
 const profiles = [
-  { id: 'surf', label: 'Surf aux Almadies', tags: ['plage', 'duel', 'vitesse'], desc: 'Glisse et maîtrise des vagues.', icon: '🏄' },
-  { id: 'basket', label: 'Basket 3x3', tags: ['stade', 'equipe', 'vitesse'], desc: 'Rapide, urbain et collectif.', icon: '🏀' },
-  { id: 'break', label: 'Breakdance', tags: ['salle', 'style', 'vitesse'], desc: 'Expression et show pour les fans.', icon: '🕺' },
-  { id: 'wrestle', label: 'Beach Wrestling', tags: ['plage', 'duel', 'force'], desc: 'Combat de plage traditionnel et spectaculaire.', icon: '🤼' },
+  {
+    id: 'breakdance',
+    label: 'Breakdance sur la plage de Saly',
+    tags: ['plage', 'style'],
+    desc: 'Expression, rythme et show sur la plage de Saly.',
+    venue: 'Plage de Saly',
+    icon: '🕺',
+  },
+  {
+    id: 'lutte',
+    label: 'Lutte Sénégalaise au Stade Iba Mar Diop',
+    tags: ['stade', 'duel'],
+    desc: 'Combat tactique et spectacle au cœur de Dakar.',
+    venue: 'Stade Iba Mar Diop',
+    icon: '🤼',
+  },
+  {
+    id: 'basket',
+    label: 'Basket 3x3 sur la Corniche',
+    tags: ['stade', 'equipe'],
+    desc: 'Rapide, collectif et urbain.',
+    venue: 'Corniche Ouest',
+    icon: '🏀',
+  },
+  {
+    id: 'surf',
+    label: 'Surf aux Almadies',
+    tags: ['plage', 'vitesse'],
+    desc: 'Glisse et maîtrise des vagues dans un décor mythique.',
+    venue: 'Almadies',
+    icon: '🏄',
+  },
 ];
 
 export default function SportsPage() {
   const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [calendarStatus, setCalendarStatus] = useState('');
 
-  const idx = Object.keys(answers).length;
+  const currentStep = Object.keys(answers).length;
+  const progress = Math.round((currentStep / questions.length) * 100);
+  const stepLabel = currentStep === 0 ? 'Commence ta découverte' : currentStep === questions.length ? 'Résultat trouvé' : 'Question suivante';
 
   function selectAnswer(key: string, value: string) {
     setAnswers((s) => ({ ...s, [key]: value }));
@@ -51,105 +82,130 @@ export default function SportsPage() {
 
   function resetQuiz() {
     setAnswers({});
+    setCalendarStatus('');
   }
 
   const result = useMemo(() => {
-    if (Object.keys(answers).length < questions.length) return null;
+    if (currentStep < questions.length) return null;
     const selected = Object.values(answers);
-    const score = profiles.map((p) => {
-      const match = p.tags.reduce((c, t) => (selected.includes(t) ? c + 1 : c), 0);
-      return { p, match };
-    });
-    score.sort((a, b) => b.match - a.match);
-    return score[0].p;
-  }, [answers]);
+    const scored = profiles.map((profile) => ({
+      profile,
+      match: profile.tags.reduce((count, tag) => (selected.includes(tag) ? count + 1 : count), 0),
+    }));
+    scored.sort((a, b) => b.match - a.match);
+    return scored[0].profile;
+  }, [answers, currentStep]);
 
   function addToCalendar() {
-    // Provide event info; minimal ICS download
-    const title = result?.label ?? 'Évènement JOJ';
+    if (!result) return;
+    const title = result.label;
+    const description = `JOJ Dakar 2026 – ${result.venue}`;
     const start = '20261031T090000';
     const end = '20261113T230000';
-    const ics = `BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nSUMMARY:${title}\nDTSTART:${start}\nDTEND:${end}\nEND:VEVENT\nEND:VCALENDAR`;
+    const ics = `BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nSUMMARY:${title}\nDESCRIPTION:${description}\nDTSTART:${start}\nDTEND:${end}\nEND:VEVENT\nEND:VCALENDAR`;
     const blob = new Blob([ics], { type: 'text/calendar' });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${title}.ics`;
-    a.click();
-    URL.revokeObjectURL(url);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${title.replace(/\s+/g, '_')}.ics`;
+    link.click();
+    window.setTimeout(() => URL.revokeObjectURL(url), 3000);
+    setCalendarStatus('Événement ajouté à ton calendrier !');
   }
 
-  async function shareResult() {
-    const text = `J'ai découvert mon sport idéal: ${result?.label} aux JOJ Dakar 2026 (31 oct - 13 nov).`;
-    try {
-      if ((navigator as any).share) {
-        await (navigator as any).share({ title: 'Mon Sport JOJ', text });
-      } else {
-        await navigator.clipboard.writeText(text);
-        alert('Texte copié pour partager sur TikTok/WhatsApp');
-      }
-    } catch (e) {
-      console.error(e);
+  function shareResult() {
+    if (!result) return;
+    const text = `J'ai découvert mon sport idéal: ${result.label} aux JOJ Dakar 2026 (31 oct - 13 nov).`;
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(text)}`;
+    if (navigator.share) {
+      navigator.share({ title: 'Mon Sport JOJ', text }).catch(() => window.open(whatsappUrl, '_blank'));
+      return;
     }
+
+    window.open(whatsappUrl, '_blank');
   }
 
   return (
     <div className="space-y-8 pb-28 md:pb-0">
-      <section className="rounded-2xl border border-white/60 bg-white/70 p-6 shadow-lg backdrop-blur-md">
+      <section className="rounded-3xl border border-white/60 bg-white/70 p-6 shadow-lg backdrop-blur-md">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <p className="text-sm uppercase tracking-widest text-gray-500">Sport-Matcher</p>
-            <h1 className="mt-3 text-3xl font-semibold">Quel sport incarne ton énergie ?</h1>
-            <p className="mt-3 text-gray-700">Trois questions rapides pour trouver le sport fait pour toi aux JOJ (31 oct - 13 nov 2026).</p>
+            <p className="text-sm uppercase tracking-widest text-slate-500">Sport-Matcher</p>
+            <h1 className="mt-3 text-3xl font-semibold text-slate-900">Quel sport incarne ton énergie ?</h1>
+            <p className="mt-3 text-slate-600">Trois questions rapides pour trouver le sport fait pour toi aux JOJ (31 oct - 13 nov 2026).</p>
           </div>
-          <div className="rounded-2xl bg-white p-4 shadow-sm">
-            <p className="text-sm uppercase text-gray-500">Progression</p>
-            <p className="mt-2 text-xl font-semibold">{Object.keys(answers).length} / {questions.length}</p>
+          <div className="rounded-3xl bg-white p-5 shadow-sm">
+            <p className="text-sm uppercase text-slate-500">Progression</p>
+            <div className="mt-3 flex items-center gap-3">
+              <span className="text-2xl font-semibold text-slate-900">{currentStep} / {questions.length}</span>
+              <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-slate-600">{progress}%</span>
+            </div>
+            <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-slate-100">
+              <div className="h-2 rounded-full bg-emerald-600 transition-all duration-500" style={{ width: `${progress}%` }} />
+            </div>
+            <p className="mt-3 text-sm text-slate-500">{stepLabel}</p>
           </div>
         </div>
       </section>
 
       <section className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-        <div className="rounded-2xl border border-white/60 bg-white/70 p-6 shadow-lg">
+        <div className="rounded-3xl border border-white/60 bg-white/70 p-6 shadow-lg">
           {result ? (
             <div className="space-y-6">
-              <div className="rounded-2xl p-6">
-                <h2 className="text-2xl font-semibold">Ayo l'athlète — {result.label}</h2>
-                <p className="mt-2 text-sm text-gray-700">{result.desc}</p>
-                <p className="mt-2 text-sm text-gray-600">Période des JOJ: 31 oct - 13 nov 2026</p>
+              <div className="rounded-[28px] border border-emerald-100 bg-emerald-50 p-6 shadow-sm">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <p className="text-sm uppercase tracking-[0.2em] text-emerald-700">Ayo l'athlète</p>
+                    <h2 className="mt-2 text-3xl font-semibold text-slate-900">{result.label}</h2>
+                  </div>
+                  <div className="text-5xl">🦁</div>
+                </div>
+                <p className="mt-4 text-slate-700">{result.desc}</p>
+                <p className="mt-3 text-sm text-slate-600">Lieu : {result.venue}</p>
+                <p className="text-sm text-slate-600">Dates des épreuves : 31 oct - 13 nov 2026</p>
               </div>
 
               <div className="grid gap-4 sm:grid-cols-3">
-                <div className="rounded-lg border bg-white p-4">
-                  <p className="text-xs uppercase text-gray-500">Style</p>
-                  <p className="mt-2 font-semibold">{answers.q2 === 'equipe' ? 'En équipe' : answers.q2 === 'duel' ? 'Face à face' : 'Expression'}</p>
+                <div className="rounded-3xl border bg-white p-4">
+                  <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Style</p>
+                  <p className="mt-2 font-semibold text-slate-900">{answers.q2 === 'equipe' ? 'En équipe' : answers.q2 === 'duel' ? 'Face à face' : 'Expression'}</p>
                 </div>
-                <div className="rounded-lg border bg-white p-4">
-                  <p className="text-xs uppercase text-gray-500">Terrain</p>
-                  <p className="mt-2 font-semibold">{answers.q1 === 'plage' ? 'Plage' : answers.q1 === 'stade' ? 'Stade' : 'Salle'}</p>
+                <div className="rounded-3xl border bg-white p-4">
+                  <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Terrain</p>
+                  <p className="mt-2 font-semibold text-slate-900">{answers.q1 === 'plage' ? 'Plage' : answers.q1 === 'stade' ? 'Stade' : 'Salle'}</p>
                 </div>
-                <div className="rounded-lg border bg-white p-4">
-                  <p className="text-xs uppercase text-gray-500">Super-pouvoir</p>
-                  <p className="mt-2 font-semibold">{answers.q3}</p>
+                <div className="rounded-3xl border bg-white p-4">
+                  <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Super-pouvoir</p>
+                  <p className="mt-2 font-semibold text-slate-900">{answers.q3}</p>
                 </div>
               </div>
 
-              <div className="flex gap-3">
-                <button onClick={addToCalendar} className="ml-auto rounded-md bg-emerald-600 px-4 py-2 text-white">Ajouter à l'agenda</button>
-                <button onClick={shareResult} className="rounded-md border px-4 py-2 inline-flex items-center gap-2"><Share2 /> Partager</button>
-                <button onClick={resetQuiz} className="rounded-md border px-4 py-2">Recommencer</button>
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <button onClick={addToCalendar} className="rounded-3xl bg-emerald-600 px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-emerald-600/20 inline-flex items-center gap-2">
+                  <CalendarDays className="h-4 w-4" /> Ajouter à mon calendrier
+                </button>
+                <button onClick={shareResult} className="rounded-3xl border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700 inline-flex items-center gap-2">
+                  <Share2 className="h-4 w-4" /> Partager sur WhatsApp
+                </button>
+                <button onClick={resetQuiz} className="rounded-3xl border border-slate-200 px-5 py-3 text-sm font-semibold text-slate-700">Recommencer</button>
               </div>
+
+              {calendarStatus && <p className="rounded-3xl bg-emerald-100 px-4 py-3 text-sm text-emerald-800">{calendarStatus}</p>}
             </div>
           ) : (
             <div className="space-y-6">
-              <div className="rounded-2xl p-6">
-                <p className="text-sm uppercase text-gray-500">Question {idx + 1} / {questions.length}</p>
-                <h2 className="mt-2 text-2xl font-semibold">{questions[idx]?.question}</h2>
+              <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
+                <p className="text-sm uppercase tracking-[0.2em] text-slate-500">Question {currentStep + 1} / {questions.length}</p>
+                <h2 className="mt-4 text-3xl font-semibold text-slate-900">{questions[currentStep]?.question}</h2>
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
-                {questions[idx]?.options.map((opt) => (
-                  <button key={opt.value} onClick={() => selectAnswer(questions[idx].key, opt.value)} className="rounded-2xl border bg-white p-4 text-left font-semibold hover:scale-102 transition">
-                    {opt.label}
+                {questions[currentStep]?.options.map((option) => (
+                  <button
+                    key={option.value}
+                    onClick={() => selectAnswer(questions[currentStep].key, option.value)}
+                    className="rounded-3xl border border-slate-200 bg-white p-6 text-left text-slate-900 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+                  >
+                    {option.label}
                   </button>
                 ))}
               </div>
@@ -157,9 +213,9 @@ export default function SportsPage() {
           )}
         </div>
 
-        <aside className="rounded-2xl border bg-white p-6">
-          <h4 className="font-semibold">Tendance Dakar</h4>
-          <p className="mt-3 text-sm text-gray-600">Le Sport‑Matcher aide à choisir un sport aligné avec ton caractère et l'ambiance des JOJ.</p>
+        <aside className="rounded-3xl border bg-white p-6 shadow-sm">
+          <h4 className="font-semibold text-slate-900">Tendance Dakar</h4>
+          <p className="mt-3 text-sm text-slate-600">Le Sport‑Matcher aide à choisir un sport aligné avec ton caractère et l'ambiance des JOJ.</p>
         </aside>
       </section>
     </div>

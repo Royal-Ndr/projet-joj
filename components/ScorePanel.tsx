@@ -1,47 +1,9 @@
 "use client"
-import { useEffect, useState } from "react";
 import { User, Trophy } from "lucide-react";
-
-const SCORE_KEY = "gainde:score";
+import { useScore } from "./ScoreProvider";
 
 export default function ScorePanel() {
-  const [score, setScore] = useState<number>(0);
-  const [level, setLevel] = useState("Lionceau Éco-Citoyen");
-
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(SCORE_KEY);
-      if (raw) setScore(Number(raw));
-    } catch (e) {}
-  }, []);
-
-  useEffect(() => {
-    function onExternal(e: Event) {
-      try {
-        // @ts-ignore
-        const s = Number((e as CustomEvent).detail?.score);
-        if (!Number.isNaN(s)) setScore(s);
-      } catch (e) {}
-    }
-    window.addEventListener('gainde:score:changed', onExternal as EventListener);
-    return () => window.removeEventListener('gainde:score:changed', onExternal as EventListener);
-  }, []);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(SCORE_KEY, String(score));
-    } catch (e) {}
-  }, [score]);
-
-  useEffect(() => {
-    if (score >= 400) setLevel("Super Gaindé");
-    else if (score >= 200) setLevel("Grand Gaindé");
-    else setLevel("Lionceau Éco-Citoyen");
-  }, [score]);
-
-  function addPoints(points: number) {
-    setScore((s) => s + points);
-  }
+  const { score, level, addPoints } = useScore();
 
   return (
     <div className="rounded-2xl bg-white/70 p-4 backdrop-blur-md shadow-lg border border-white/40">
