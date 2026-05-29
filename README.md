@@ -21,7 +21,7 @@ Ce n'est pas juste une app sur les Jeux. C'est un outil pour que la jeunesse sé
 
 ## Aperçu
 
-| Dashboard Éco-Citoyen | Carte Téranga | Sport-Matcher |---|---|---||  ![Dashboard](./screenshots/capshot1.png) | ![Carte](./screenshots/capshot2.png) | ![Sport-Matcher](./screenshots/capshot3.png) |
+| Dashboard Éco-Citoyen | Carte Téranga | Sport-Matcher|[Dashboard](./screenshots/capshot1.png) | ![Carte](./screenshots/capshot2.png) | ![Sport-Matcher](./screenshots/capshot3.png) |
 
 
 ## Fonctionnalités
@@ -97,7 +97,6 @@ projet-joj/
 ## Stack technique
 
 | Technologie | Version | Rôle |
-|---|---|---|
 | [Next.js](https://nextjs.org/) | 15.2 | Framework React — *App Router* |
 | [TypeScript](https://www.typescriptlang.org/) | 5.6 | Typage statique |
 | [React](https://react.dev/) | 18 | Interface utilisateur |
