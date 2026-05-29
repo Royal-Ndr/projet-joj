@@ -21,7 +21,9 @@ Ce n'est pas juste une app sur les Jeux. C'est un outil pour que la jeunesse sé
 
 ## Aperçu
 
-| Dashboard Éco-Citoyen | Carte Téranga | Sport-Matcher | ![Dashboard](./screenshots/capshot1.png) | ![Carte](./screenshots/capshot2.png) | ![Sport-Matcher](./screenshots/capshot3.png) |
+| Dashboard Éco-Citoyen | Carte Téranga | Sport-Matcher |
+|---|---|---|
+|![Dashboard](./screenshots/capshot1.png) | ![Carte](./screenshots/capshot2.png) | ![Sport-Matcher](./screenshots/capshot3.png) |
 
 
 ## Fonctionnalités
