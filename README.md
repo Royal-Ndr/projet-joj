@@ -96,12 +96,16 @@ projet-joj/
 
 ## Stack technique
 
+```md
 | Technologie | Version | Rôle |
+|---|---|---|
 | [Next.js](https://nextjs.org/) | 15.2 | Framework React — *App Router* |
 | [TypeScript](https://www.typescriptlang.org/) | 5.6 | Typage statique |
 | [React](https://react.dev/) | 18 | Interface utilisateur |
 | [Tailwind CSS](https://tailwindcss.com/) | 3.4 | Styles utilitaires |
 | [Lucide React](https://lucide.dev/) | latest | Icônes |
+```
+
 
 **Choix d'architecture notables :**
 - Approche *mobile-first* avec navigation basse sur mobile et barre latérale sur desktop
