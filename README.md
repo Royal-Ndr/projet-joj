@@ -12,14 +12,16 @@
 
 ## Présentation
 
-J'ai créé **Gaindé Zone** seul, dans le cadre d'un hackathon, avec une idée simple en tête : construire une plateforme qui mêle sport, culture et éco-citoyenneté autour des JOJ Dakar 2026.
+**Gaindé Zone** transforme la participation aux JOJ Dakar 2026 en une expérience active et responsable. La plateforme réunit trois modules complémentaires : un dashboard d'éco-citoyenneté gamifié, une carte interactive du patrimoine sénégalais, et un outil d'orientation vers les sports olympiques.
+
+Le projet cible la jeunesse locale et valorise la culture sénégalaise à travers une interface mobile-first, conçue pour fonctionner même dans des contextes de connectivité limitée.
 
 Ce n'est pas juste une app sur les Jeux. C'est un outil pour que la jeunesse sénégalaise s'approprie l'événement — découvrir les lieux, relever des défis écologiques, trouver son sport. Le tout dans une interface pensée pour le mobile, parce que c'est comme ça qu'on navigue ici.
 
 
 ## Aperçu
 
-| Dashboard Éco-Citoyen | Carte Téranga | Sport-Matcher | |---|---|---| | ![Dashboard](./screenshots/capshot1.png) | ![Carte](./screenshots/capshot2.png) | ![Sport-Matcher](./screenshots/capshot3.png) |
+| Dashboard Éco-Citoyen | Carte Téranga | Sport-Matcher |---|---|---||  ![Dashboard](./screenshots/capshot1.png) | ![Carte](./screenshots/capshot2.png) | ![Sport-Matcher](./screenshots/capshot3.png) |
 
 
 ## Fonctionnalités
@@ -179,7 +181,7 @@ Pour signaler un bug ou proposer une idée → [ouvre une issue](https://github.
 
 **Royal-Ndr** — [GitHub](https://github.com/Royal-Ndr)
 
-Projet solo développé pour un hackathon, dans le cadre des Jeux Olympiques de la Jeunesse Dakar 2026. Si tu as des questions ou des idées, n'hésite pas à ouvrir une issue — je lis tout.
+Projet développé dans le cadre des Jeux Olympiques de la Jeunesse Dakar 2026. Si tu as des questions ou des idées, n'hésite pas à ouvrir une issue — je lis tout.
 
 
 ## Licence
