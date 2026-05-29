@@ -88,7 +88,7 @@ projet-joj/
 ├── components/               # Composants React réutilisables
 ├── public/                   # Assets statiques (icônes, images)
 ├── docs/
-│   └── screenshots/          # Captures d'écran pour le README
+│   └── screenshots/          # Captures d'écran git pour le README
 ├── tailwind.config.ts        # Configuration Tailwind CSS
 └── next.config.ts            # Configuration Next.js
 ```
@@ -96,7 +96,6 @@ projet-joj/
 
 ## Stack technique
 
-```md
 | Technologie | Version | Rôle |
 |---|---|---|
 | [Next.js](https://nextjs.org/) | 15.2 | Framework React — *App Router* |
